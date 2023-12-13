@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AdminControlPanel implements ActionListener {
     // Singleton instance
@@ -18,6 +20,8 @@ public class AdminControlPanel implements ActionListener {
     private JButton showGroupTotalButton;
     private JButton showMessagesTotalButton;
     private JButton showPositivePercentageButton;
+    private JButton verifyUserIDsButton;
+    private JButton lastUpdatedUserButton;
     private TreeView treeView;
 
     // Constructor for singleton pattern
@@ -60,6 +64,14 @@ public class AdminControlPanel implements ActionListener {
         showMessagesTotalButton = createButton("Show Message Total", Color.WHITE,darkBlue);
         showPositivePercentageButton = createButton("Show Positive Percentage", Color.WHITE,darkBlue);
 
+        // Verify user IDS
+        verifyUserIDsButton = createButton("Verify IDs", Color.WHITE, darkBlue);
+        verifyUserIDsButton.addActionListener(this);
+
+        // Show last updated User
+        lastUpdatedUserButton = createButton("Show Last Updated User", Color.WHITE, darkBlue);
+        lastUpdatedUserButton.addActionListener(this);
+
         // Set the color for these components
         userIDField.setBackground(lightBlue);
         userIDField.setForeground(darkBlue);
@@ -78,6 +90,8 @@ public class AdminControlPanel implements ActionListener {
         rightPanel.add(showGroupTotalButton);
         rightPanel.add(showMessagesTotalButton);
         rightPanel.add(showPositivePercentageButton);
+        rightPanel.add(verifyUserIDsButton);
+        rightPanel.add(lastUpdatedUserButton);
 
         // Split treeview and right hand panel
         JSplitPane splitPane = new JSplitPane(
@@ -141,6 +155,10 @@ public class AdminControlPanel implements ActionListener {
             showMessageTotalAction();
         } else if ("Show Positive Percentage".equals(command)) {
             showPositivePercentageAction();
+        } else if ("Verify IDs".equals(command)) {
+            verifyIDs();
+        } else if ("Show Last Updated User".equals(command)) {
+            showLastUpdatedUser();
         }
     }
     
@@ -154,6 +172,24 @@ public class AdminControlPanel implements ActionListener {
             // Handle the case where no user is selected or the selection is not a user
             showMessage("No user selected or selected entry is not a user.", "Open User View Error");
         }
+    }
+
+    // Verify IDS
+    private void verifyIDs(){
+        Set<String> ids = new HashSet<>();
+        boolean areValidIDs = true;
+
+        for (EntryText entry : treeView.getEntries().values()) {
+            String id = entry.getDisplayName();
+            if (ids.contains(id) || id.contains(" ")) {
+                areValidIDs = false;
+                break;
+            }
+            ids.add(id);
+        }
+
+        String message = areValidIDs ? "All IDs are valid." : "Invalid IDs found.";
+        JOptionPane.showMessageDialog(frame, message, "ID Verification", JOptionPane.INFORMATION_MESSAGE);
     }
 
     // Adds user based on what is inputted into the text field
@@ -205,5 +241,23 @@ public class AdminControlPanel implements ActionListener {
     // Shows information about the app when called for 
     private void showMessage(String message, String title) {
         JOptionPane.showMessageDialog(frame, message, title, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    // Shows last updated user
+    private void showLastUpdatedUser(){
+        User lastUpdatedUser = null;
+        long lastUpdateTime = 0;
+
+        for (EntryText entry : treeView.getEntries().values()) {
+            if (entry instanceof User) {
+                User user = (User) entry;
+                if (user.getLastUpdateTime() > lastUpdateTime) {
+                    lastUpdatedUser = user;
+                    lastUpdateTime = user.getLastUpdateTime();
+                }
+            }
+        }
+        String message = (lastUpdatedUser != null) ? "Last user updated: " + lastUpdatedUser.getDisplayName(): "None.";
+        JOptionPane.showMessageDialog(frame, message, "Last user updated", JOptionPane.INFORMATION_MESSAGE);
     }
 }

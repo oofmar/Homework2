@@ -102,4 +102,9 @@ public class TreeView  {
     public int getTotalGroups() {
         return (int) entries.values().stream().filter(e -> e instanceof Group).count();
     }
+
+    // Get entries
+    public Map<String, EntryText> getEntries() {
+        return entries;
+    }
 }

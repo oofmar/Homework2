@@ -13,6 +13,8 @@ public class User extends EntryText implements Observable, Visitable {
     private int userTweets;
     private int positiveTweets;
     private UserView window;
+    private long creationTime;
+    private long lastUpdateTime;
 
     // Makes sure user is not empty or duplicate, if mot then create user and set their count to 0
     public User(String id) {
@@ -24,6 +26,7 @@ public class User extends EntryText implements Observable, Visitable {
         allUserIds.add(id);
         this.userTweets = 0;
         this.positiveTweets = 0;
+        this.creationTime = System.currentTimeMillis();
     }
 
     // Amount of users that are followed by this user
@@ -81,8 +84,13 @@ public class User extends EntryText implements Observable, Visitable {
 
     // Method to post a tweet by the user
     public void post(String tweet) {
+    this.lastUpdateTime = System.currentTimeMillis();
     for (Observer follower : followers) {
         follower.receive(this.getDisplayName() + ": " + tweet);
+
+        if (follower instanceof User) {
+            ((User) follower).lastUpdateTime = this.lastUpdateTime;
+        }
     }
     // News feed is updated if user window is open
     if (this.window != null) {
@@ -134,5 +142,15 @@ public class User extends EntryText implements Observable, Visitable {
     @Override
     public boolean isUser() {
         return true;
+    }
+
+    // Get creation time
+    public long getCreationTime() {
+        return creationTime;
+    }
+
+    // Get last update time
+    public long getLastUpdateTime() {
+        return lastUpdateTime;
     }
 }

@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
 
 public class UserView extends JFrame implements ActionListener {
 
@@ -13,6 +14,7 @@ public class UserView extends JFrame implements ActionListener {
     private DefaultListModel<String> followingModel;
     private DefaultListModel<String> newsFeedModel;
     private User currentUser;
+    private JLabel lastUpdateTimeLabel;
 
     // Sets up the window that will be for the user view
     public UserView(User user) {
@@ -113,5 +115,6 @@ public class UserView extends JFrame implements ActionListener {
     // Displays tweet 
     public void receive(String tweet) {
         newsFeedModel.addElement(tweet);
+        lastUpdateTimeLabel.setText("Last Update Time: " + new Date(currentUser.getLastUpdateTime()).toString());
     }
 }

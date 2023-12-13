@@ -8,6 +8,7 @@ public class Group extends EntryText implements Visitable {
     private static int totalGroups = 0;
     private static Set<String> groupNames = new HashSet<>();
     private String name;
+    private long creationTime;
 
     // First checks if group already exists, if it does throw exception, if not then create the group and increment
     public Group(String name) {
@@ -18,6 +19,7 @@ public class Group extends EntryText implements Visitable {
         this.entries = new HashSet<>();
         totalGroups++;
         groupNames.add(name);
+        this.creationTime = System.currentTimeMillis();
     }
 
     
@@ -62,5 +64,10 @@ public class Group extends EntryText implements Visitable {
     @Override
     public boolean isUser() {
         return false;
+    }
+
+    // Get creation time
+    public long getCreationTime() {
+        return creationTime;
     }
 }
